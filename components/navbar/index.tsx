@@ -32,7 +32,7 @@ export const NavBar = () => {
         </Link>
         <Link
           className={buttonVariants({ variant: 'secondary' })}
-          href={'/auth/lognin'}
+          href={'/auth/login'}
         >
           Sign In
         </Link>
