@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { NavBar } from '@/components/navbar';
+
 import { ThemeProvider } from '@/components/theme-provider';
 
 const geistHeading = Geist({ subsets: ['latin'], variable: '--font-heading' });
@@ -54,8 +54,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className='max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8'>
-            <NavBar />
-
             {children}
           </main>
         </ThemeProvider>
