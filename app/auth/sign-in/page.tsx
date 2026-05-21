@@ -1,6 +1,6 @@
 'use client';
 
-import { SignUpFormValues, signUpSchema } from '@/app/scheemas';
+import { SignInFormValues, signInSchema } from '@/app/scheemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { defaultValues } from './helpers';
@@ -14,46 +14,25 @@ import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const form = useForm({
-    resolver: zodResolver(signUpSchema),
+    resolver: zodResolver(signInSchema),
     defaultValues,
   });
 
-  const onSubmit = (data: SignUpFormValues) => {
+  const onSubmit = (data: SignInFormValues) => {
     console.log(data);
   };
 
   return (
     <Card className='w-full shadow-lg ring-foreground/5'>
       <CardHeader>
-        <CardTitle>Sign Up</CardTitle>
+        <CardTitle>Sign In</CardTitle>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
-            <Controller
-              control={form.control}
-              name='name'
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Name</FieldLabel>
-                  <Input
-                    aria-invalid={fieldState.invalid}
-                    placeholder='John Doe'
-                    type='text'
-                    {...field}
-                  />
-                  {form.formState.errors.name && (
-                    <FieldError>
-                      {form.formState.errors.name.message}
-                    </FieldError>
-                  )}
-                </Field>
-              )}
-            />
-
             <Controller
               control={form.control}
               name='email'
@@ -96,7 +75,7 @@ export default function SignUpPage() {
               )}
             />
 
-            <Button type='submit'>Sign Up</Button>
+            <Button type='submit'>Sign In</Button>
           </FieldGroup>
         </form>
       </CardContent>
