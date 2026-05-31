@@ -1,6 +1,6 @@
 'use client';
 
-import { SignInFormValues, signInSchema } from '@/app/scheemas';
+import { SignInFormValues, signInSchema } from '@/app/schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { defaultValues } from './helpers';
@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
 
 export default function SignInPage() {
   const form = useForm({
@@ -20,8 +21,11 @@ export default function SignInPage() {
     defaultValues,
   });
 
-  const onSubmit = (data: SignInFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: SignInFormValues) => {
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    });
   };
 
   return (
