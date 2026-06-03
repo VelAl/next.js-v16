@@ -5,9 +5,32 @@ import { Button, buttonVariants } from '../ui/button';
 import { ThemeToggle } from '../theme-toggle';
 import { useConvexAuth } from 'convex/react';
 import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
 export const NavBar = () => {
+  const router = useRouter();
   const { isAuthenticated } = useConvexAuth();
+  const [isPending, startTransition] = useTransition();
+
+  const handleSignOut = () => {
+    startTransition(async () => {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Signed out successfully.');
+            router.push('/auth/sign-in');
+          },
+          onError: (err) => {
+            toast.error('Failed to sign out.', {
+              description: err.error?.message,
+            });
+          },
+        },
+      });
+    });
+  };
 
   return (
     <nav className='w-full p-5 flex items-center justify-between'>
@@ -34,7 +57,13 @@ export const NavBar = () => {
 
       <div className='flex items-center gap-2 ml-auto'>
         {isAuthenticated ? (
-          <Button onClick={() => authClient.signOut()}>Log Out</Button>
+          <Button
+            className='min-w-20'
+            onClick={handleSignOut}
+            isLoading={isPending}
+          >
+            Log Out
+          </Button>
         ) : (
           <>
             <Link className={buttonVariants()} href={'/auth/sign-up'}>

@@ -14,17 +14,35 @@ import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
 
 export default function SignInPage() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues,
   });
 
-  const onSubmit = async (data: SignInFormValues) => {
-    await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
+  const onSubmit = (data: SignInFormValues) => {
+    startTransition(async () => {
+      await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Signed in successfully.');
+            router.push('/');
+          },
+          onError: (err) => {
+            toast.error('Failed to sign in.', {
+              description: err.error?.message,
+            });
+          },
+        },
+      });
     });
   };
 
@@ -79,7 +97,9 @@ export default function SignInPage() {
               )}
             />
 
-            <Button type='submit'>Sign In</Button>
+            <Button type='submit' isLoading={isPending}>
+              Sign In
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>

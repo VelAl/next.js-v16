@@ -14,18 +14,36 @@ import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues,
   });
 
-  const onSubmit = async (data: SignUpFormValues) => {
-    await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
+  const onSubmit = (data: SignUpFormValues) => {
+    startTransition(async () => {
+      await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Account created successfully');
+            router.push('/');
+          },
+          onError: (err) => {
+            toast.error('Failed to create account.', {
+              description: err.error?.message,
+            });
+          },
+        },
+      });
     });
   };
 
@@ -101,7 +119,9 @@ export default function SignUpPage() {
               )}
             />
 
-            <Button type='submit'>Sign Up</Button>
+            <Button type='submit' isLoading={isPending}>
+              Sign Up
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>
