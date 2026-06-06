@@ -1,6 +1,6 @@
 'use client';
 
-import { CreateBlogFormValues, createBlogSchema } from '@/app/schemas';
+import { createBlogSchema } from '@/app/schemas';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,19 +19,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { defaultValues, useCreatePost } from './utils';
 
 const CreatePage = () => {
+  const [pending, createPost] = useCreatePost();
   const form = useForm({
     resolver: zodResolver(createBlogSchema),
-    defaultValues: {
-      title: '',
-      content: '',
-    },
+    defaultValues,
   });
-
-  const onSubmit = (data: CreateBlogFormValues) => {
-    console.log(data);
-  };
 
   return (
     <div className='py-12'>
@@ -51,7 +46,7 @@ const CreatePage = () => {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(createPost)}>
             <FieldGroup className='flex flex-col gap-y-4'>
               <Controller
                 control={form.control}
@@ -74,7 +69,7 @@ const CreatePage = () => {
 
               <Controller
                 control={form.control}
-                name='content'
+                name='body'
                 render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Content</FieldLabel>
@@ -90,7 +85,9 @@ const CreatePage = () => {
                 )}
               />
 
-              <Button type='submit'>Create</Button>
+              <Button type='submit' isLoading={pending}>
+                Create
+              </Button>
             </FieldGroup>
           </form>
         </CardContent>
