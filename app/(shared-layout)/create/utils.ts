@@ -23,7 +23,7 @@ export const useCreatePost = () => {
         await createPostMutation(data);
 
         toast.success('Post created successfully.');
-        router.push('/');
+        router.push('/blog');
       } catch (error) {
         toast.error('Failed to create post.', {
           description:

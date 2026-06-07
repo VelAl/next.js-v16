@@ -36,7 +36,7 @@ export const NavBar = () => {
     <nav className='w-full p-5 flex items-center justify-between'>
       <div className='flex items-center gap-8'>
         <Link href={'/'} className='text-3xl font-bold'>
-          Next.js<span className='text-blue-500'>16</span>
+          Next.js<span className='text-primary'>16</span>
         </Link>
 
         <div className='flex items-center gap-2'>
