@@ -107,17 +107,17 @@ const CreatePage = () => {
                     >
                       <ImagePlus className='mb-3 size-8 text-muted-foreground' />
                       <span className='text-sm font-medium'>
-                        {field.value?.name ?? 'Upload an image'}
+                        {field.value?.name ?? 'Upload an image (optional)'}
                       </span>
                       <span className='mt-1 text-xs text-muted-foreground'>
-                        Choose a PNG, JPG, GIF, or WEBP file.
+                        Choose a PNG, JPG, or WEBP file up to 5MB.
                       </span>
                     </FieldLabel>
                     <Input
                       id='image'
                       aria-invalid={fieldState.invalid}
                       type='file'
-                      accept='image/*'
+                      accept='image/png,image/jpeg,image/webp'
                       className='sr-only'
                       onChange={(e) => {
                         const file = e.target.files?.[0];
