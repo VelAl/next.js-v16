@@ -12,7 +12,6 @@ import { fetchQuery } from 'convex/nextjs';
 import Link from 'next/link';
 
 export async function PostsSection() {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
   const posts = await fetchQuery(api.posts.getPosts);
 
   return (
@@ -28,7 +27,9 @@ export async function PostsSection() {
               </Link>
             </CardHeader>
 
-            <CardDescription className='line-clamp-5'>{post.body}</CardDescription>
+            <CardDescription className='line-clamp-5'>
+              {post.body}
+            </CardDescription>
 
             <CardFooter className='mt-auto'>
               <Link

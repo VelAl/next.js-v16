@@ -7,20 +7,34 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
-export const defaultValues: CreateBlogFormValues = {
-  title: '',
-  body: '',
-};
-
 export const useCreatePost = () => {
   const router = useRouter();
   const createPostMutation = useMutation(api.posts.createPost);
+  const generateImgUploadURL = useMutation(api.posts.generateImgUploadURL);
   const [pending, startTransition] = useTransition();
 
   const createPost = (data: CreateBlogFormValues) => {
     startTransition(async () => {
       try {
-        await createPostMutation(data);
+        const uploadUrl = await generateImgUploadURL();
+
+        const result = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': data.image.type },
+          body: data.image,
+        });
+
+        if (!result.ok) {
+          throw new Error('Failed to upload image.');
+        }
+
+        const { storageId } = await result.json();
+
+        await createPostMutation({
+          title: data.title,
+          body: data.body,
+          imgStorageId: storageId,
+        });
 
         toast.success('Post created successfully.');
         router.push('/blog');
