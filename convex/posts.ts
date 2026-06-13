@@ -29,13 +29,40 @@ export const getPosts = query({
     const posts = await ctx.db.query('posts').collect();
 
     return await Promise.all(
-      posts.map(async ({ imgStorageId, ...post }) => ({
-        ...post,
-        imgUrl: imgStorageId
-          ? await ctx.storage.getUrl(imgStorageId)
-          : undefined,
-      }))
+      posts.map(async ({ imgStorageId, ...post }) => {
+        const imgUrl = imgStorageId && (await ctx.storage.getUrl(imgStorageId));
+
+        return {
+          ...post,
+          ...(imgUrl && { imgUrl }),
+        };
+      })
     );
+  },
+});
+
+export const getPostById = query({
+  args: {
+    postId: v.id('posts'),
+  },
+  handler: async (ctx, args) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      throw new ConvexError('Not authenticated.');
+    }
+
+    const post = await ctx.db.get(args.postId);
+    if (!post) {
+      return null;
+    }
+
+    const imgUrl =
+      post.imgStorageId && (await ctx.storage.getUrl(post.imgStorageId));
+
+    return {
+      ...post,
+      ...(imgUrl && { imgUrl }),
+    };
   },
 });
 

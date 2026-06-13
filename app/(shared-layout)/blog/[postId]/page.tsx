@@ -1,0 +1,76 @@
+import { buttonVariants } from '@/components/ui/button';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { fetchAuthQuery } from '@/lib/auth-server';
+import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+type BlogPostPageProps = {
+  params: Promise<{
+    postId: string;
+  }>;
+};
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { postId } = await params;
+
+  const post = await fetchAuthQuery(api.posts.getPostById, {
+    postId: postId as Id<'posts'>,
+  });
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    <article className='mx-auto max-w-4xl py-12'>
+      <div className='mb-8'>
+        <Link
+          href='/blog'
+          className={buttonVariants({ variant: 'outline', size: 'sm' })}
+        >
+          <ArrowLeft />
+          Back to all posts
+        </Link>
+      </div>
+
+      <header className='mb-8 space-y-4'>
+        <p className='text-sm font-medium uppercase tracking-wide text-muted-foreground'>
+          Post details
+        </p>
+        <h1 className='text-4xl font-extrabold tracking-tight sm:text-5xl'>
+          {post.title}
+        </h1>
+        <p className='text-sm text-muted-foreground'>
+          Post ID:{' '}
+          <code className='rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground'>
+            {post._id}
+          </code>
+        </p>
+      </header>
+
+      {post.imgUrl ? (
+        <div className='relative mb-10 h-72 w-full overflow-hidden rounded-xl sm:h-96'>
+          <Image
+            src={post.imgUrl}
+            alt={post.title}
+            fill
+            priority
+            sizes='(min-width: 1024px) 896px, 100vw'
+            className='object-cover'
+          />
+        </div>
+      ) : (
+        <div className='mb-10 h-72 w-full rounded-xl bg-[radial-gradient(circle_at_top_left,var(--chart-1),transparent_35%),linear-gradient(135deg,var(--primary),var(--chart-3),var(--accent))] sm:h-96' />
+      )}
+
+      <div className='border-t pt-8'>
+        <p className='whitespace-pre-wrap text-base leading-8 text-muted-foreground sm:text-lg'>
+          {post.body}
+        </p>
+      </div>
+    </article>
+  );
+}
