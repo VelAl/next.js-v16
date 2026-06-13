@@ -1,6 +1,6 @@
 'use client';
 
-import { createBlogSchema } from '@/app/schemas';
+import { createBlogSchema, type CreateBlogFormValues } from '@/app/schemas';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,15 +17,21 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ImagePlus } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
-import { defaultValues, useCreatePost } from './utils';
+import { useCreatePost } from './utils';
 
 const CreatePage = () => {
   const [pending, createPost] = useCreatePost();
-  const form = useForm({
+  const form = useForm<CreateBlogFormValues>({
     resolver: zodResolver(createBlogSchema),
-    defaultValues,
+    defaultValues: {
+      title: '',
+      body: '',
+      image: undefined,
+    },
   });
 
   return (
@@ -77,6 +83,46 @@ const CreatePage = () => {
                       aria-invalid={fieldState.invalid}
                       placeholder='Content'
                       {...field}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={form.control}
+                name='image'
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Image</FieldLabel>
+                    <FieldLabel
+                      htmlFor='image'
+                      className={cn(
+                        'flex min-h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-input bg-muted/30 px-4 py-6 text-center transition-colors hover:bg-muted/50',
+                        fieldState.invalid &&
+                          'border-destructive ring-3 ring-destructive/20'
+                      )}
+                    >
+                      <ImagePlus className='mb-3 size-8 text-muted-foreground' />
+                      <span className='text-sm font-medium'>
+                        {field.value?.name ?? 'Upload an image (optional)'}
+                      </span>
+                      <span className='mt-1 text-xs text-muted-foreground'>
+                        Choose a PNG, JPG, or WEBP file up to 5MB.
+                      </span>
+                    </FieldLabel>
+                    <Input
+                      id='image'
+                      aria-invalid={fieldState.invalid}
+                      type='file'
+                      accept='image/png,image/jpeg,image/webp'
+                      className='sr-only'
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
