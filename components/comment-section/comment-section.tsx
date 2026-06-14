@@ -7,9 +7,8 @@ import {
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from 'convex/react';
+import { type Preloaded, useMutation, usePreloadedQuery } from 'convex/react';
 import { MessageSquareIcon } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -20,10 +19,17 @@ import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
 import { Comment } from './comment';
 
-export const CommentSection = () => {
-  const { postId } = useParams<{ postId: Id<'posts'> }>();
+type CommentSectionProps = {
+  postId: Id<'posts'>;
+  preloadedComments: Preloaded<typeof api.comments.getCommentsByPostId>;
+};
+
+export const CommentSection = ({
+  postId,
+  preloadedComments,
+}: CommentSectionProps) => {
   const createComment = useMutation(api.comments.createComment);
-  const comments = useQuery(api.comments.getCommentsByPostId, { postId });
+  const comments = usePreloadedQuery(preloadedComments);
 
   const [isPending, startTransition] = useTransition();
 

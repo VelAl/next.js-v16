@@ -2,7 +2,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { CommentSection } from '@/components/comment-section';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
-import { fetchAuthQuery } from '@/lib/auth-server';
+import { fetchAuthQuery, preloadAuthQuery } from '@/lib/auth-server';
 import { formatDateTime } from '@/lib/utils';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
@@ -17,17 +17,24 @@ type BlogPostPageProps = {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { postId } = await params;
+  const typedPostId = postId as Id<'posts'>;
 
   const post = await fetchAuthQuery(api.posts.getPostById, {
-    postId: postId as Id<'posts'>,
+    postId: typedPostId,
   });
 
   if (!post) {
     notFound();
   }
 
-  const createdAt = formatDateTime(post._creationTime);
+  const preloadedComments = await preloadAuthQuery(
+    api.comments.getCommentsByPostId,
+    {
+      postId: typedPostId,
+    }
+  );
 
+  const createdAt = formatDateTime(post._creationTime);
 
   return (
     <div className='mx-auto max-w-4xl py-12'>
@@ -89,7 +96,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </article>
 
       <section className='mt-12'>
-        <CommentSection />
+        <CommentSection
+          postId={post._id}
+          preloadedComments={preloadedComments}
+        />
       </section>
     </div>
   );
