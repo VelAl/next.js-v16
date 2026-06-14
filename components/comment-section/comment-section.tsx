@@ -1,7 +1,55 @@
+'use client';
+
+import {
+  createCommentSchema,
+  type CreateCommentFormValues,
+} from '@/app/schemas/comment';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from 'convex/react';
 import { MessageSquareIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
+import { Textarea } from '../ui/textarea';
 
 export const CommentSection = () => {
+  const { postId } = useParams<{ postId: Id<'posts'> }>();
+  const createComment = useMutation(api.comments.createComment);
+
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<CreateCommentFormValues>({
+    resolver: zodResolver(createCommentSchema),
+    defaultValues: {
+      postId,
+      body: '',
+    },
+  });
+
+  const onSubmit = (values: CreateCommentFormValues) => {
+    startTransition(async () => {
+      try {
+        await createComment({
+          postId: values.postId,
+          body: values.body,
+        });
+
+        form.reset({ postId, body: '' });
+        toast.success('Comment added.');
+      } catch (error) {
+        toast.error('Failed to add comment.', {
+          description: error instanceof Error ? error.message : undefined,
+        });
+      }
+    });
+  };
+
   return (
     <Card>
       <CardHeader className='flex flex-row items-center gap-2 border-b pb-4'>
@@ -10,8 +58,33 @@ export const CommentSection = () => {
       </CardHeader>
 
       <CardContent>
-        <form></form>
-        
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name='body'
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Comment</FieldLabel>
+                  <Textarea
+                    aria-invalid={fieldState.invalid}
+                    placeholder='Write a comment...'
+                    {...field}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <div className='flex justify-end'>
+              <Button type='submit' className='min-w-28' isLoading={isPending}>
+                Send
+              </Button>
+            </div>
+          </FieldGroup>
+        </form>
       </CardContent>
     </Card>
   );
