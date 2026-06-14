@@ -7,7 +7,7 @@ import {
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { MessageSquareIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useTransition } from 'react';
@@ -16,11 +16,14 @@ import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
+import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
+import { Comment } from './comment';
 
 export const CommentSection = () => {
   const { postId } = useParams<{ postId: Id<'posts'> }>();
   const createComment = useMutation(api.comments.createComment);
+  const comments = useQuery(api.comments.getCommentsByPostId, { postId });
 
   const [isPending, startTransition] = useTransition();
 
@@ -57,7 +60,7 @@ export const CommentSection = () => {
         <CardTitle>Comments</CardTitle>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className='space-y-6'>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
@@ -85,6 +88,22 @@ export const CommentSection = () => {
             </div>
           </FieldGroup>
         </form>
+
+        {comments && comments.length > 0 && (
+          <>
+            <Separator />
+            <div className='space-y-5'>
+              {comments.map((comment) => (
+                <Comment
+                  key={comment._id}
+                  authorName={comment.authorName}
+                  body={comment.body}
+                  createdAt={comment._creationTime}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

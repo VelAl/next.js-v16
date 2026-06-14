@@ -3,6 +3,7 @@ import { CommentSection } from '@/components/comment-section';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { fetchAuthQuery } from '@/lib/auth-server';
+import { formatDateTime } from '@/lib/utils';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,10 +26,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  const createdAt = new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(post._creationTime));
+  const createdAt = formatDateTime(post._creationTime);
+
 
   return (
     <div className='mx-auto max-w-4xl py-12'>
