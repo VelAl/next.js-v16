@@ -4,7 +4,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 
 import { ThemeProvider } from '@/components/theme-provider';
-import { ConvexClientProvider } from '@/components/ConvexClientProvider';
+import { ConvexClientProvider } from '@/components/convex-client-provider';
 import { Toaster } from '@/components/ui/sonner';
 
 const geistHeading = Geist({ subsets: ['latin'], variable: '--font-heading' });
