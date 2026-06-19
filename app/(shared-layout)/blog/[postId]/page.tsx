@@ -19,20 +19,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { postId } = await params;
   const typedPostId = postId as Id<'posts'>;
 
-  const post = await fetchAuthQuery(api.posts.getPostById, {
-    postId: typedPostId,
-  });
+  const [post, preloadedComments] = await Promise.all([
+    fetchAuthQuery(api.posts.getPostById, {
+      postId: typedPostId,
+    }),
+    preloadAuthQuery(api.comments.getCommentsByPostId, {
+      postId: typedPostId,
+    }),
+  ]);
 
   if (!post) {
     notFound();
   }
-
-  const preloadedComments = await preloadAuthQuery(
-    api.comments.getCommentsByPostId,
-    {
-      postId: typedPostId,
-    }
-  );
 
   const createdAt = formatDateTime(post._creationTime);
 
