@@ -5,6 +5,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { fetchAuthQuery, preloadAuthQuery } from '@/lib/auth-server';
 import { formatDateTime } from '@/lib/utils';
 import { ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -14,6 +15,34 @@ type BlogPostPageProps = {
     postId: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { postId } = await params;
+
+  const post = await fetchAuthQuery(api.posts.getPostById, {
+    postId: postId as Id<'posts'>,
+  }).catch(() => null);
+
+  if (!post) {
+    return { title: 'Blog Post' };
+  }
+
+  const description =
+    post.body.length > 160 ? `${post.body.slice(0, 157)}...` : post.body;
+
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      ...(post.imgUrl && { images: [{ url: post.imgUrl, alt: post.title }] }),
+    },
+  };
+}
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { postId } = await params;

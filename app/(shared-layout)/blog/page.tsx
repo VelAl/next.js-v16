@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'Read the latest blog posts.',
+};
 import { PostsSectionSkeleton } from './posts-section-skeleton';
 import { PostsSection } from './posts-section';
 
