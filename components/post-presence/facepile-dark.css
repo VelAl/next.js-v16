@@ -1,0 +1,18 @@
+/* Loaded after @convex-dev/presence facepile.css via post-presence.tsx */
+.dark .post-presence-facepile .tooltip,
+.dark .post-presence-facepile .dropdown {
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 0.3);
+}
+
+.dark .post-presence-facepile .tooltip-user,
+.dark .post-presence-facepile .dropdown-user {
+  color: var(--popover-foreground) !important;
+}
+
+.dark .post-presence-facepile .tooltip-status,
+.dark .post-presence-facepile .dropdown-status {
+  color: var(--muted-foreground) !important;
+}

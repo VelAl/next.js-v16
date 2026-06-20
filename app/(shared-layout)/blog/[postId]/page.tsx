@@ -1,5 +1,6 @@
 import { buttonVariants } from '@/components/ui/button';
 import { CommentSection } from '@/components/comment-section';
+import { PostPresence } from '@/components/post-presence';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { fetchAuthQuery, preloadAuthQuery } from '@/lib/auth-server';
@@ -48,13 +49,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { postId } = await params;
   const typedPostId = postId as Id<'posts'>;
 
-  const [post, preloadedComments] = await Promise.all([
+  const [post, preloadedComments, userId] = await Promise.all([
     fetchAuthQuery(api.posts.getPostById, {
       postId: typedPostId,
     }),
     preloadAuthQuery(api.comments.getCommentsByPostId, {
       postId: typedPostId,
     }),
+    fetchAuthQuery(api.presence.getUserId, {}).catch(() => null),
   ]);
 
   if (!post) {
@@ -100,19 +102,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className='mb-4 h-72 w-full rounded-xl bg-[radial-gradient(circle_at_top_left,var(--chart-1),transparent_35%),linear-gradient(135deg,var(--primary),var(--chart-3),var(--accent))] sm:h-96' />
         )}
 
-        <div className='mb-8 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-4'>
-          <p>
-            Post ID:{' '}
-            <code className='rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground'>
-              {post._id}
-            </code>
-          </p>
-          <p>
-            Created:{' '}
-            <time dateTime={new Date(post._creationTime).toISOString()}>
-              {createdAt}
-            </time>
-          </p>
+        <div className={userId ? 'mb-4 flex flex-col gap-4' : 'mb-8'}>
+          <div className='flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-4'>
+            <p>
+              Post ID:{' '}
+              <code className='rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground'>
+                {post._id}
+              </code>
+            </p>
+            <p>
+              Created:{' '}
+              <time dateTime={new Date(post._creationTime).toISOString()}>
+                {createdAt}
+              </time>
+            </p>
+          </div>
+
+          {userId && <PostPresence roomId={post._id} userId={userId} />}
         </div>
 
         <div className='border-t pt-8'>
