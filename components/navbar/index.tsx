@@ -11,7 +11,7 @@ import { useTransition } from 'react';
 
 export const NavBar = () => {
   const router = useRouter();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated, isLoading } = useConvexAuth();
   const [isPending, startTransition] = useTransition();
 
   const handleSignOut = () => {
@@ -43,15 +43,22 @@ export const NavBar = () => {
           <Link className={buttonVariants({ variant: 'ghost' })} href={'/'}>
             Home
           </Link>
-          <Link className={buttonVariants({ variant: 'ghost' })} href={'/blog'}>
-            Blog
-          </Link>
-          <Link
-            className={buttonVariants({ variant: 'ghost' })}
-            href={'/create'}
-          >
-            Create
-          </Link>
+          {!isLoading && isAuthenticated ? (
+            <>
+              <Link
+                className={buttonVariants({ variant: 'ghost' })}
+                href={'/blog'}
+              >
+                Blog
+              </Link>
+              <Link
+                className={buttonVariants({ variant: 'ghost' })}
+                href={'/create'}
+              >
+                Create
+              </Link>
+            </>
+          ) : null}
         </div>
       </div>
 

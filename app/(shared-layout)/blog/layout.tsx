@@ -1,13 +1,7 @@
-import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth-server';
 
-export const metadata: Metadata = {
-  title: 'Create Post',
-  description: 'Create and publish a new blog article.',
-};
-
-export default async function CreateLayout({
+export default async function BlogLayout({
   children,
 }: {
   children: React.ReactNode;
