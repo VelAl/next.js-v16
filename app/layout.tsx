@@ -71,14 +71,14 @@ export default function RootLayout({
       )}
       suppressHydrationWarning
     >
-      <body className='min-h-full flex flex-col'>
+      <body className='flex h-full flex-col overflow-hidden'>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
           enableSystem
           disableTransitionOnChange
         >
-          <main className='max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8'>
+          <main className='mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden px-4 md:px-6 lg:px-8'>
             <ConvexClientProvider>{children}</ConvexClientProvider>
           </main>
           <Toaster closeButton />

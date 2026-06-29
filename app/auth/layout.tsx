@@ -15,12 +15,7 @@ export default function AuthLayout({
   const meta = getAuthRouteMeta(pathname);
 
   return (
-    <div
-      className={cn(
-        'relative flex flex-1 flex-col',
-        'min-h-[calc(100svh-1rem)]'
-      )}
-    >
+    <div className={cn('relative flex min-h-0 flex-1 flex-col overflow-y-auto')}>
       {/* Decorative background: blurred color blobs + fade to page background */}
       <div
         aria-hidden

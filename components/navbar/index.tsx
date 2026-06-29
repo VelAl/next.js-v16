@@ -37,7 +37,7 @@ export const NavBar = () => {
   };
 
   return (
-    <nav className='w-full p-5 flex items-center justify-between'>
+    <nav className='flex w-full shrink-0 items-center justify-between border-b border-border bg-background p-5'>
       <div className='flex items-center gap-8'>
         <Link href={'/'} className='text-3xl font-bold'>
           Next.js<span className='text-primary'>16</span>
