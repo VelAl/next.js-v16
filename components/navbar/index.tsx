@@ -6,13 +6,17 @@ import { ThemeToggle } from '../theme-toggle';
 import { useConvexAuth } from 'convex/react';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { SearchPosts } from '../search-posts';
 
 export const NavBar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const [isPending, startTransition] = useTransition();
+
+  const showSearch = pathname.startsWith('/blog');
 
   const handleSignOut = () => {
     startTransition(async () => {
@@ -63,6 +67,8 @@ export const NavBar = () => {
       </div>
 
       <div className='flex items-center gap-2 ml-auto'>
+        {!isLoading && isAuthenticated && showSearch ? <SearchPosts /> : null}
+
         {isAuthenticated ? (
           <Button
             className='min-w-20'
